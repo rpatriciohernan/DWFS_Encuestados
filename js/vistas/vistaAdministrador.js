@@ -14,6 +14,15 @@ var VistaAdministrador = function(modelo, controlador, elementos) {
   this.modelo.preguntaBorrada.suscribir(function(){
     contexto.reconstruirLista();
   });
+  this.modelo.respuestaAgregada.suscribir(function(){
+    contexto.reconstruirLista();
+  });
+  this.modelo.preguntaEditada.suscribir(function(){
+    contexto.reconstruirLista();
+  });
+  this.modelo.preguntasBorradas.suscribir(function(){
+    contexto.reconstruirLista();
+  });
 };
 
 
@@ -72,7 +81,12 @@ VistaAdministrador.prototype = {
       var id = parseInt($('.list-group-item.active').attr('id'));
       contexto.controlador.borrarPregunta(id);
     });
-    e.borrarTodo.click(); 
+    e.borrarTodo.click(function(){
+      contexto.controlador.borrarPreguntas();
+    }); 
+    e.botonEditarPregunta.click(function(){
+     // e.pregunta.val($('[name="option[]"]:checked').val());
+    });
   },
 
   limpiarFormulario: function(){
