@@ -1,30 +1,38 @@
 /*
  * Modelo
  */
+traerPreguntasAlmacenadas = function(){
+  preguntasAlmacenadas = JSON.parse(localStorage.getItem("preguntas"));
+  if (preguntasAlmacenadas == null) {
+    return [];
+  } else {
+    return preguntasAlmacenadas;
+  }
+};
+
 var Modelo = function() {
-  this.preguntas = [];
+  this.preguntas = traerPreguntasAlmacenadas();
   this.ultimoId = 0;
 
   //inicializacion de eventos
   this.preguntaAgregada = new Evento(this);
   this.preguntaBorrada = new Evento(this);
-  this.respuestaAgregada = new Evento(this); 
-  this.votoAgregado = new Evento(this); 
   this.preguntaEditada = new Evento(this);
+  this.respuestaAgregada = new Evento(this);
   this.preguntasBorradas = new Evento(this);
+  this.votoAgregado = new Evento(this);
 };
 
 Modelo.prototype = {
   //se obtiene el id más grande asignado a una pregunta
   obtenerUltimoId: function() {
-    var ultimoId = 0;
-    if(this.preguntas.length > 0) {
-      this.preguntas.forEach( 
-        function(element){
-          if(element.id > ultimoId) { ultimoId = element.id; };
-      });
+    var idMaximo = 1;
+    for (var i=0; i < this.preguntas.length; i++) {
+      if ( this.preguntas[i].id > idMaximo) {
+        idMaximo = this.preguntas[i].id;
+      }
     };
-    return ultimoId;
+    return idMaximo;
   },
 
   //se agrega una pregunta dado un nombre y sus respuestas
@@ -37,46 +45,66 @@ Modelo.prototype = {
     this.preguntaAgregada.notificar();
   },
 
-  borrarPregunta: function(id){
-    this.preguntas = this.preguntas.filter(pregunta => pregunta.id !== id);
-    this.eliminar(id);
+  editarPreguntaCompleta: function(nuevoTexto, nuevasRespuestas, id){
+    this.preguntas.forEach(function(pregunta){
+        if (pregunta.id == id){
+          pregunta.textoPregunta = nuevoTexto;
+          pregunta.cantidadPorRespuesta = nuevasRespuestas;
+        }
+    });
+    this.guardar();
+    this.preguntaEditada.notificar();
+  },
+
+  editarPreguntaSinNuevasRespuestas: function(nuevoTexto, id){
+    this.preguntas.forEach(function(pregunta){
+        if (pregunta.id == id){
+          pregunta.textoPregunta = nuevoTexto;
+        }
+    });
+    this.guardar();
+    this.preguntaEditada.notificar();
+  },
+
+
+  borrarPreguntas: function(){
+    this.preguntas = [];
+    this.guardar();
+    this.preguntasBorradas.notificar();
+  },
+
+  borrarPregunta: function(id) {
+    var preguntasActualizado = [];
+    this.preguntas.forEach(function(pregunta){
+      if(pregunta.id != id) {
+        preguntasActualizado.push(pregunta);
+      };
+    });
+    this.preguntas = preguntasActualizado;
+    this.guardar();
     this.preguntaBorrada.notificar();
   },
 
-  //se guardan las preguntas
-  guardar: function(){
-    this.preguntas.forEach(pregunta => localStorage.setItem(pregunta.id,JSON.stringify(pregunta)));
-  },
-
-  eliminar:function(id){
-    localStorage.removeItem(id);
-  },
-
-  agregarRespuesta: function(idPregunta, nuevaRespuesta){
-    this.preguntas.find(pregunta => pregunta.id == idPregunta).cantidadPorRespuesta.push(nuevaRespuesta);
+  agregarRespuesta: function(idPregunta, respuesta){
+    this.preguntas.forEach(function(pregunta){
+      if(pregunta.id == idPregunta){
+        pregunta.cantidadPorRespuesta.push(respuesta);
+      };
+    });
     this.guardar();
     this.respuestaAgregada.notificar();
   },
 
-  agregarVoto: function(nombrePregunta,respuestaSeleccionada){
-    var pregunta = this.preguntas.find(pregunta => pregunta.texto == nombrePregunta);
-    var respuesta = pregunta.cantidadPorRespuesta.find(respuesta => respuesta.textoRespuesta == respuestaSeleccionada);
+  incrementarVotoDeRespuesta: function(id, textoRespuesta){
+    var pregunta = this.preguntas.find(pregunta => pregunta.id == id);
+    var respuesta = pregunta.cantidadPorRespuesta.find(respuesta => respuesta.textoRespuesta == textoRespuesta);
     respuesta.cantidad++;
     this.guardar();
     this.votoAgregado.notificar();
   },
 
-  editarPregunta: function(preguntaEditada){
-    this.preguntas.find(pregunta => pregunta.id == preguntaEditada.id) = preguntaEditada;
-    this.guardar();
-    this.preguntaEditada.notificar();
+  guardar: function(){
+    localStorage.clear();
+    localStorage.setItem("preguntas", JSON.stringify(this.preguntas));
   },
-
-  borrarPreguntas: function(){
-    var contexto = this;
-    this.preguntas.forEach(pregunta => contexto.eliminar(pregunta.id));
-    this.preguntas = [];
-    this.preguntasBorradas.notificar();
-  },
-
 };

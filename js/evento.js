@@ -10,7 +10,7 @@ Evento.prototype = {
   },
   notificar: function() {
     for (var i = 0; i < this.observadores.length; i++) {
-      this.observadores[i](this.sujeto); //El sujeto es una funcion que al estar entre parentesis se ejecuta al ser llamada
+      this.observadores[i](this.sujeto);
     }
   }
 };
