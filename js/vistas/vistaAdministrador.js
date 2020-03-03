@@ -85,22 +85,8 @@ VistaAdministrador.prototype = {
 
     e.botonEditarPregunta.click(function(){
       var id = parseInt($('.list-group-item.active').attr('id'));
-      var nuevoTextoPregunta = e.pregunta.val();
-      var nuevasRespuestas = [];
-
-      if (nuevoTextoPregunta == "") {
-        nuevoTextoPregunta = $('.list-group-item.active h5').text();
-      }
-
-      $('[name="option[]"]').each(function() {
-        textoRespuesta = $(this).val();
-        if (textoRespuesta != "") {
-          nuevasRespuestas.push({'textoRespuesta': textoRespuesta, 'cantidad': 0});
-        }
-      });
-
-      contexto.controlador.editarPregunta(nuevoTextoPregunta, nuevasRespuestas, id);
-      contexto.limpiarFormulario();
+      var textoPregunta = prompt("Ingresa el nuevo texto de la pregunta:");
+      contexto.controlador.editarPregunta(id, textoPregunta);
     });
   },
 

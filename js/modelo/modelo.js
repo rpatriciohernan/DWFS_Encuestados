@@ -45,27 +45,14 @@ Modelo.prototype = {
     this.preguntaAgregada.notificar();
   },
 
-  editarPreguntaCompleta: function(nuevoTexto, nuevasRespuestas, id){
-    this.preguntas.forEach(function(pregunta){
-        if (pregunta.id == id){
-          pregunta.textoPregunta = nuevoTexto;
-          pregunta.cantidadPorRespuesta = nuevasRespuestas;
-        }
-    });
+  editarPregunta: function(id, nuevoTextoPregunta){
+    const preguntaAEditar = this.preguntas.find( pregunta => pregunta.id == id );
+
+    preguntaAEditar.textoPregunta = nuevoTextoPregunta;
+
     this.guardar();
     this.preguntaEditada.notificar();
   },
-
-  editarPreguntaSinNuevasRespuestas: function(nuevoTexto, id){
-    this.preguntas.forEach(function(pregunta){
-        if (pregunta.id == id){
-          pregunta.textoPregunta = nuevoTexto;
-        }
-    });
-    this.guardar();
-    this.preguntaEditada.notificar();
-  },
-
 
   borrarPreguntas: function(){
     this.preguntas = [];

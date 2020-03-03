@@ -9,12 +9,10 @@ Controlador.prototype = {
   agregarPregunta: function(pregunta, respuestas) {
       this.modelo.agregarPregunta(pregunta, respuestas);
   },
-  editarPregunta: function(nuevoTexto, nuevasRespuestas, id){
+  editarPregunta: function(id, nuevoTextoPregunta){
 
-    if (nuevasRespuestas.length < 1) {
-      this.modelo.editarPreguntaSinNuevasRespuestas(nuevoTexto, id);
-    } else {
-      this.modelo.editarPreguntaCompleta(nuevoTexto, nuevasRespuestas, id);
+    if (nuevoTextoPregunta != "" && nuevoTextoPregunta != undefined) {
+      this.modelo.editarPregunta(id, nuevoTextoPregunta);
     }    
   },
   borrarPregunta: function(id) {
